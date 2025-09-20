@@ -1,0 +1,9 @@
+services:
+  api:
+    build:
+      context: ./api
+    container_name: task-management-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+    ports:
+      - "5274:5000"
