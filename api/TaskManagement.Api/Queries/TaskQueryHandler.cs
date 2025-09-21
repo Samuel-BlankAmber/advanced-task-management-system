@@ -25,6 +25,11 @@ public class TaskQueryHandler(ITaskRepository repository) : ITaskQueryHandler
 
     public async Task<List<TaskItem>> HandleAsync(GetAllTasksQuery query)
     {
-        return await _repository.GetAllAsync();
+        if (!query.Priority.HasValue && !query.Status.HasValue)
+        {
+            return await _repository.GetAllAsync();
+        }
+
+        return await _repository.GetFilteredAsync(query.Priority, query.Status);
     }
 }

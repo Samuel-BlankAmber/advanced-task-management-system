@@ -18,6 +18,23 @@ public class TaskRepository(TasksDb context) : ITaskRepository
         return await _context.Tasks.ToListAsync();
     }
 
+    public async Task<List<TaskItem>> GetFilteredAsync(Priority? priority = null, Status? status = null)
+    {
+        var query = _context.Tasks.AsQueryable();
+
+        if (priority.HasValue)
+        {
+            query = query.Where(t => t.Priority == priority.Value);
+        }
+
+        if (status.HasValue)
+        {
+            query = query.Where(t => t.Status == status.Value);
+        }
+
+        return await query.ToListAsync();
+    }
+
     public async Task<TaskItem> CreateAsync(TaskItem task)
     {
         _context.Tasks.Add(task);

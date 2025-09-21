@@ -13,11 +13,11 @@ public class TasksController(ITaskCommandHandler commandHandler, ITaskQueryHandl
     private readonly ITaskQueryHandler _queryHandler = queryHandler;
 
     [HttpGet]
-    public async Task<ActionResult<List<TaskItem>>> GetAll()
+    public async Task<ActionResult<List<TaskItem>>> GetAll([FromQuery] Priority? priority = null, [FromQuery] Status? status = null)
     {
         try
         {
-            var query = new GetAllTasksQuery();
+            var query = new GetAllTasksQuery(priority, status);
             var tasks = await _queryHandler.HandleAsync(query);
             return Ok(tasks);
         }
