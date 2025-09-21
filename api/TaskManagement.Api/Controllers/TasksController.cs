@@ -20,109 +20,65 @@ public class TasksController(ITaskCommandHandler commandHandler, ITaskQueryHandl
         [FromQuery] Guid? cursor = null,
         [FromQuery] int pageSize = 10)
     {
-        try
-        {
-            var query = new GetTasksQuery(priority, status, cursor, pageSize);
-            var result = await _queryHandler.HandleAsync(query);
-            return Ok(result);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An unexpected error occurred");
-        }
+        var query = new GetTasksQuery(priority, status, cursor, pageSize);
+        var result = await _queryHandler.HandleAsync(query);
+        return Ok(result);
     }
 
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<TaskItem>> GetOne(Guid id)
     {
-        try
+        var query = new GetTaskByIdQuery(id);
+        var task = await _queryHandler.HandleAsync(query);
+        if (task is not null)
         {
-            var query = new GetTaskByIdQuery(id);
-            var task = await _queryHandler.HandleAsync(query);
-            if (task is not null)
-            {
-                return Ok(task);
-            }
-            else
-            {
-                return NotFound();
-            }
+            return Ok(task);
         }
-        catch (Exception)
-        {
-            return StatusCode(500, "An unexpected error occurred");
-        }
+        return NotFound();
     }
 
     [HttpPost]
     public async Task<ActionResult<TaskItem>> Create(TaskRequest request)
     {
-        try
-        {
-            var command = new CreateTaskCommand(
-                request.Title,
-                request.Description,
-                request.Priority,
-                request.DueDate,
-                request.Status
-            );
-            var task = await _commandHandler.HandleAsync(command);
-            return CreatedAtAction(nameof(GetOne), new { id = task.Id }, task);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "An unexpected error occurred");
-        }
+        var command = new CreateTaskCommand(
+            request.Title,
+            request.Description,
+            request.Priority,
+            request.DueDate,
+            request.Status
+        );
+        var task = await _commandHandler.HandleAsync(command);
+        return CreatedAtAction(nameof(GetOne), new { id = task.Id }, task);
     }
 
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<TaskItem>> Update(Guid id, TaskRequest request)
     {
-        try
+        var command = new UpdateTaskCommand(
+            id,
+            request.Title,
+            request.Description,
+            request.Priority,
+            request.DueDate,
+            request.Status
+        );
+        var task = await _commandHandler.HandleAsync(command);
+        if (task is not null)
         {
-            var command = new UpdateTaskCommand(
-                id,
-                request.Title,
-                request.Description,
-                request.Priority,
-                request.DueDate,
-                request.Status
-            );
-            var task = await _commandHandler.HandleAsync(command);
-            if (task is not null)
-            {
-                return Ok(task);
-            }
-            else
-            {
-                return NotFound();
-            }
+            return Ok(task);
         }
-        catch (Exception)
-        {
-            return StatusCode(500, "An unexpected error occurred");
-        }
+        return NotFound();
     }
 
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult> Delete(Guid id)
     {
-        try
+        var command = new DeleteTaskCommand(id);
+        var deleted = await _commandHandler.HandleAsync(command);
+        if (deleted)
         {
-            var command = new DeleteTaskCommand(id);
-            var deleted = await _commandHandler.HandleAsync(command);
-            if (deleted)
-            {
-                return NoContent();
-            }
-            else
-            {
-                return NotFound();
-            }
+            return NoContent();
         }
-        catch (Exception)
-        {
-            return StatusCode(500, "An unexpected error occurred");
-        }
+        return NotFound();
     }
 }

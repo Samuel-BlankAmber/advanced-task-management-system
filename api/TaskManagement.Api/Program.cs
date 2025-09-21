@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using TaskManagement.Api.Commands;
 using TaskManagement.Api.Data;
+using TaskManagement.Api.Middleware;
 using TaskManagement.Api.Queries;
 using TaskManagement.Api.Repositories;
 
@@ -33,6 +34,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 app.MapControllers();
 app.Run();
