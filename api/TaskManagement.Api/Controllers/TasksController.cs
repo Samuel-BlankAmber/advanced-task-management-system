@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagement.Api.Commands;
 using TaskManagement.Api.Models;
@@ -8,12 +9,14 @@ namespace TaskManagement.Api.Controllers;
 
 [ApiController]
 [Route("tasks")]
+[Authorize]
 public class TasksController(ITaskCommandHandler commandHandler, ITaskQueryHandler queryHandler) : ControllerBase
 {
     private readonly ITaskCommandHandler _commandHandler = commandHandler;
     private readonly ITaskQueryHandler _queryHandler = queryHandler;
 
     [HttpGet]
+    [Authorize("read:tasks")]
     public async Task<ActionResult<CursorPaginatedResult<TaskItem>>> GetAll(
         [FromQuery] Priority? priority = null,
         [FromQuery] Status? status = null,
@@ -26,6 +29,7 @@ public class TasksController(ITaskCommandHandler commandHandler, ITaskQueryHandl
     }
 
     [HttpGet("{id:guid}")]
+    [Authorize("read:tasks")]
     public async Task<ActionResult<TaskItem>> GetOne(Guid id)
     {
         var query = new GetTaskByIdQuery(id);
@@ -38,6 +42,7 @@ public class TasksController(ITaskCommandHandler commandHandler, ITaskQueryHandl
     }
 
     [HttpPost]
+    [Authorize("write:tasks")]
     public async Task<ActionResult<TaskItem>> Create(TaskRequest request)
     {
         var command = new CreateTaskCommand(
@@ -52,6 +57,7 @@ public class TasksController(ITaskCommandHandler commandHandler, ITaskQueryHandl
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize("write:tasks")]
     public async Task<ActionResult<TaskItem>> Update(Guid id, TaskRequest request)
     {
         var command = new UpdateTaskCommand(
@@ -71,6 +77,7 @@ public class TasksController(ITaskCommandHandler commandHandler, ITaskQueryHandl
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize("write:tasks")]
     public async Task<ActionResult> Delete(Guid id)
     {
         var command = new DeleteTaskCommand(id);
