@@ -35,12 +35,6 @@ public class TaskCommandHandler(ITaskRepository repository) : ITaskCommandHandle
             return null;
         }
 
-        var existingTask = await _repository.GetByIdAsync(command.Id);
-        if (existingTask == null)
-        {
-            return null;
-        }
-
         var updatedTask = new TaskItem
         {
             Id = command.Id,
