@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TaskManagement.Api.Commands;
 using TaskManagement.Api.Models;
+using TaskManagement.Api.Models.Common;
 using TaskManagement.Api.Queries;
 
 namespace TaskManagement.Api.Controllers;
@@ -13,13 +14,17 @@ public class TasksController(ITaskCommandHandler commandHandler, ITaskQueryHandl
     private readonly ITaskQueryHandler _queryHandler = queryHandler;
 
     [HttpGet]
-    public async Task<ActionResult<List<TaskItem>>> GetAll([FromQuery] Priority? priority = null, [FromQuery] Status? status = null)
+    public async Task<ActionResult<CursorPaginatedResult<TaskItem>>> GetAll(
+        [FromQuery] Priority? priority = null,
+        [FromQuery] Status? status = null,
+        [FromQuery] Guid? cursor = null,
+        [FromQuery] int pageSize = 10)
     {
         try
         {
-            var query = new GetAllTasksQuery(priority, status);
-            var tasks = await _queryHandler.HandleAsync(query);
-            return Ok(tasks);
+            var query = new GetTasksQuery(priority, status, cursor, pageSize);
+            var result = await _queryHandler.HandleAsync(query);
+            return Ok(result);
         }
         catch (Exception)
         {

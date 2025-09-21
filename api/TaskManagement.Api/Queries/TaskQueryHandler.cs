@@ -1,4 +1,5 @@
 using TaskManagement.Api.Models;
+using TaskManagement.Api.Models.Common;
 using TaskManagement.Api.Repositories;
 
 namespace TaskManagement.Api.Queries;
@@ -6,7 +7,7 @@ namespace TaskManagement.Api.Queries;
 public interface ITaskQueryHandler
 {
     Task<TaskItem?> HandleAsync(GetTaskByIdQuery query);
-    Task<List<TaskItem>> HandleAsync(GetAllTasksQuery query);
+    Task<CursorPaginatedResult<TaskItem>> HandleAsync(GetTasksQuery query);
 }
 
 public class TaskQueryHandler(ITaskRepository repository) : ITaskQueryHandler
@@ -23,13 +24,10 @@ public class TaskQueryHandler(ITaskRepository repository) : ITaskQueryHandler
         return await _repository.GetByIdAsync(query.Id);
     }
 
-    public async Task<List<TaskItem>> HandleAsync(GetAllTasksQuery query)
+    public async Task<CursorPaginatedResult<TaskItem>> HandleAsync(GetTasksQuery query)
     {
-        if (!query.Priority.HasValue && !query.Status.HasValue)
-        {
-            return await _repository.GetAllAsync();
-        }
+        var pageSize = Math.Max(1, Math.Min(100, query.PageSize));
 
-        return await _repository.GetFilteredAsync(query.Priority, query.Status);
+        return await _repository.GetCursorPaginatedAsync(query.Cursor, pageSize, query.Priority, query.Status);
     }
 }
