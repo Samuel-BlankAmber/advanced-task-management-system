@@ -4,12 +4,6 @@ using TaskManagement.Api.Repositories;
 
 namespace TaskManagement.Api.Queries;
 
-public interface ITaskQueryHandler
-{
-    Task<TaskItem?> HandleAsync(GetTaskByIdQuery query);
-    Task<CursorPaginatedResult<TaskItem>> HandleAsync(GetTasksQuery query);
-}
-
 public class TaskQueryHandler(ITaskRepository repository) : ITaskQueryHandler
 {
     private readonly ITaskRepository _repository = repository;

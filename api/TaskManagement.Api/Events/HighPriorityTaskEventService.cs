@@ -13,11 +13,6 @@ public class HighPriorityTaskEvent
     public TaskItem Task { get; set; } = null!;
 }
 
-public interface IHighPriorityTaskEventService
-{
-    Task TriggerHighPriorityTaskEventAsync(TaskItem task, string action);
-}
-
 public class HighPriorityTaskEventService(ILogger<HighPriorityTaskEventService> logger) : IHighPriorityTaskEventService
 {
     private readonly ILogger<HighPriorityTaskEventService> _logger = logger;
