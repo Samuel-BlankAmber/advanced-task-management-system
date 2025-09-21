@@ -6,6 +6,8 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: "Production"
       ConnectionStrings__TasksDb: "Host=${POSTGRES_HOST:-postgres}; Port=${POSTGRES_PORT:-5432}; Database=${POSTGRES_DB:-tasks}; Username=${POSTGRES_USER:-postgres}; Password=${POSTGRES_PW}"
+      Auth0__Domain: "${AUTH0_DOMAIN}"
+      Auth0__Audience: "${AUTH0_AUDIENCE}"
     ports:
       - "${API_PORT:-5274}:5000"
     depends_on:
