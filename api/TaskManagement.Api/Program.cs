@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using TaskManagement.Api.Commands;
 using TaskManagement.Api.Data;
+using TaskManagement.Api.Events;
 using TaskManagement.Api.Middleware;
 using TaskManagement.Api.Queries;
 using TaskManagement.Api.Repositories;
@@ -15,6 +16,7 @@ builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 
 builder.Services.AddScoped<ITaskCommandHandler, TaskCommandHandler>();
 builder.Services.AddScoped<ITaskQueryHandler, TaskQueryHandler>();
+builder.Services.AddScoped<IHighPriorityTaskEventService, HighPriorityTaskEventService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
@@ -35,6 +37,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<ApiRequestLoggingMiddleware>();
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 app.MapControllers();

@@ -1,3 +1,4 @@
+using TaskManagement.Api.Events;
 using TaskManagement.Api.Models;
 using TaskManagement.Api.Repositories;
 
@@ -10,9 +11,10 @@ public interface ITaskCommandHandler
     Task<bool> HandleAsync(DeleteTaskCommand command);
 }
 
-public class TaskCommandHandler(ITaskRepository repository) : ITaskCommandHandler
+public class TaskCommandHandler(ITaskRepository repository, IHighPriorityTaskEventService eventService) : ITaskCommandHandler
 {
     private readonly ITaskRepository _repository = repository;
+    private readonly IHighPriorityTaskEventService _eventService = eventService;
 
     public async Task<TaskItem> HandleAsync(CreateTaskCommand command)
     {
@@ -25,7 +27,14 @@ public class TaskCommandHandler(ITaskRepository repository) : ITaskCommandHandle
             Status = command.Status,
         };
 
-        return await _repository.CreateAsync(task);
+        var createdTask = await _repository.CreateAsync(task);
+
+        if (createdTask.Priority == Priority.High)
+        {
+            await _eventService.TriggerHighPriorityTaskEventAsync(createdTask, "Created");
+        }
+
+        return createdTask;
     }
 
     public async Task<TaskItem?> HandleAsync(UpdateTaskCommand command)
@@ -45,7 +54,14 @@ public class TaskCommandHandler(ITaskRepository repository) : ITaskCommandHandle
             Status = command.Status,
         };
 
-        return await _repository.UpdateAsync(command.Id, updatedTask);
+        var result = await _repository.UpdateAsync(command.Id, updatedTask);
+
+        if (result != null && result.Priority == Priority.High)
+        {
+            await _eventService.TriggerHighPriorityTaskEventAsync(result, "Updated");
+        }
+
+        return result;
     }
 
     public async Task<bool> HandleAsync(DeleteTaskCommand command)
