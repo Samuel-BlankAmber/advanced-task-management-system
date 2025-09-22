@@ -2,6 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY . .
 RUN dotnet restore "TaskManagement.Api/TaskManagement.Api.csproj"
+RUN dotnet test "TaskManagement.Tests/TaskManagement.Tests.csproj"
 RUN dotnet publish "TaskManagement.Api/TaskManagement.Api.csproj" -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
