@@ -1,4 +1,23 @@
 services:
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_AUTH0_DOMAIN: ${VITE_AUTH0_DOMAIN}
+        VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE}
+        VITE_AUTH0_CLIENT_ID: ${VITE_AUTH0_CLIENT_ID}
+        VITE_API_URL: ${VITE_API_URL:-http://host.docker.internal:${API_PORT:-5274}}
+    container_name: task-management-frontend
+    environment:
+      VITE_AUTH0_DOMAIN: "${VITE_AUTH0_DOMAIN}"
+      VITE_AUTH0_AUDIENCE: "${VITE_AUTH0_AUDIENCE}"
+      VITE_AUTH0_CLIENT_ID: "${VITE_AUTH0_CLIENT_ID}"
+      VITE_API_URL: "${VITE_API_URL:-http://host.docker.internal:${API_PORT:-5274}}"
+    ports:
+      - "${FRONTEND_PORT:-5173}:80"
+    depends_on:
+      - api
+
   api:
     build:
       context: ./api
