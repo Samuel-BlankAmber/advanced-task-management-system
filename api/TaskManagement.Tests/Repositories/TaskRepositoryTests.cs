@@ -421,4 +421,43 @@ public class TaskRepositoryTests : IDisposable
     }
 
     #endregion
+
+    #region GetStatusSummaryAsync Tests
+
+    [Fact]
+    public async Task GetStatusSummaryAsync_EmptyDatabase_ShouldReturnZeroCounts()
+    {
+        // Act
+        var summary = await _repository.GetStatusSummaryAsync();
+
+        // Assert
+        summary.Should().NotBeNull();
+        summary.Total.Should().Be(0);
+        summary.Counts.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetStatusSummaryAsync_WithTasks_ReturnsCountsAndTotal()
+    {
+        // Arrange
+        var t1 = CreateSampleTask("A", status: Status.Pending);
+        var t2 = CreateSampleTask("B", status: Status.Pending);
+        var t3 = CreateSampleTask("C", status: Status.Completed);
+        await SeedDatabase(t1, t2, t3);
+
+        // Act
+        var summary = await _repository.GetStatusSummaryAsync();
+
+        // Assert
+        summary.Should().NotBeNull();
+        summary.Total.Should().Be(3);
+        var pending = summary.Counts.FirstOrDefault(c => c.Status == Status.Pending);
+        var completed = summary.Counts.FirstOrDefault(c => c.Status == Status.Completed);
+        pending.Should().NotBeNull();
+        pending!.Count.Should().Be(2);
+        completed.Should().NotBeNull();
+        completed!.Count.Should().Be(1);
+    }
+
+    #endregion
 }

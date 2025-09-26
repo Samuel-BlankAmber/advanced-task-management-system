@@ -10,3 +10,5 @@ public record GetTasksQuery(
     Guid? Cursor = null,
     int PageSize = 10
 );
+
+public record GetTasksSummaryQuery();

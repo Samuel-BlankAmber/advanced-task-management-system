@@ -28,6 +28,15 @@ public class TasksController(ITaskCommandHandler commandHandler, ITaskQueryHandl
         return Ok(result);
     }
 
+    [HttpGet("summary")]
+    [Authorize("read:tasks")]
+    public async Task<ActionResult<StatusSummary>> GetSummary()
+    {
+        var query = new GetTasksSummaryQuery();
+        var result = await _queryHandler.HandleAsync(query);
+        return Ok(result);
+    }
+
     [HttpGet("{id:guid}")]
     [Authorize("read:tasks")]
     public async Task<ActionResult<TaskItem>> GetOne(Guid id)

@@ -7,4 +7,5 @@ public interface ITaskQueryHandler
 {
     Task<TaskItem?> HandleAsync(GetTaskByIdQuery query);
     Task<CursorPaginatedResult<TaskItem>> HandleAsync(GetTasksQuery query);
+    Task<StatusSummary> HandleAsync(GetTasksSummaryQuery query);
 }

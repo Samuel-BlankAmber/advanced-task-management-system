@@ -147,4 +147,26 @@ public class TasksControllerTests
         // Assert
         result.Should().BeOfType<NotFoundResult>();
     }
+
+    [Fact]
+    public async Task GetSummary_ReturnsOk_WithStatusSummary()
+    {
+        // Arrange
+        var summary = new StatusSummary(
+            [
+                new(Status.Pending, 2),
+                new(Status.Completed, 1)
+            ],
+            total: 3
+        );
+        _queryHandlerMock.Setup(q => q.HandleAsync(It.IsAny<GetTasksSummaryQuery>())).ReturnsAsync(summary);
+
+        // Act
+        var result = await _controller.GetSummary();
+
+        // Assert
+        result.Result.Should().BeOfType<OkObjectResult>();
+        var ok = result.Result as OkObjectResult;
+        ok!.Value.Should().Be(summary);
+    }
 }

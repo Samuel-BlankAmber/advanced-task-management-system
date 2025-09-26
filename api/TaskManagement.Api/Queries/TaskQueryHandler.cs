@@ -24,4 +24,9 @@ public class TaskQueryHandler(ITaskRepository repository) : ITaskQueryHandler
 
         return await _repository.GetCursorPaginatedAsync(query.Cursor, pageSize, query.Priority, query.Status);
     }
+
+    public async Task<StatusSummary> HandleAsync(GetTasksSummaryQuery query)
+    {
+        return await _repository.GetStatusSummaryAsync();
+    }
 }

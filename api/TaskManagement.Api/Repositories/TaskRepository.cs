@@ -87,4 +87,20 @@ public class TaskRepository(TasksDb context) : ITaskRepository
         await _context.SaveChangesAsync();
         return true;
     }
+
+    public async Task<StatusSummary> GetStatusSummaryAsync()
+    {
+        var query = _context.Tasks.AsQueryable();
+
+        var total = await query.CountAsync();
+
+        var grouped = await query
+            .GroupBy(t => t.Status)
+            .Select(g => new { Status = g.Key, Count = g.Count() })
+            .ToListAsync();
+
+        var counts = grouped.Select(g => new StatusCount(g.Status, g.Count)).ToList();
+
+        return new StatusSummary(counts, total);
+    }
 }
