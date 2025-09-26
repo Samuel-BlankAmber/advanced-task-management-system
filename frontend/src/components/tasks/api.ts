@@ -105,3 +105,16 @@ export async function deleteTask(token: string, id: string): Promise<void> {
   });
   if (!res.ok) throw new Error('Failed to delete task');
 }
+
+export type CountItem = { status: keyof typeof Status | string; count: number };
+export type Summary = { counts: CountItem[]; total: number };
+
+export async function fetchTasksSummary(token: string): Promise<Summary> {
+  const res = await fetch(`${API_BASE}/summary`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) throw new Error('Failed to fetch summary');
+  return await res.json();
+}

@@ -4,6 +4,7 @@ import { fetchTasks, Priority, Status } from './api';
 import { selectStyle } from '../../styles/ui';
 import type { TaskItem } from './api';
 import { TokenContext } from '../../App';
+import TaskStatusSummary from './TaskStatusSummary';
 
 export default function TaskList() {
   const token = useContext(TokenContext);
@@ -64,6 +65,7 @@ export default function TaskList() {
   return (
     <div style={{ maxWidth: 800, margin: '12px auto', background: '#fff', borderRadius: 12, boxShadow: '0 2px 12px #0001', padding: '8px 24px', }}>
       <h2 style={{ textAlign: 'center', marginBottom: 24, color: '#2d3748', }}>Tasks</h2>
+      <TaskStatusSummary />
       <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 24, justifyContent: 'center', flexWrap: 'wrap', }}>
         <div>
           <label style={{ fontWeight: 500, marginRight: 8 }}>Priority:</label>
